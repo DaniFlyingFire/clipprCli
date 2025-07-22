@@ -46,7 +46,14 @@ struct ClipprTokenSelect: ParsableCommand {
 
         if success 
         {
-            noora.success("Changed active config")
+            guard let config = data.tokens[id] else {
+
+                let warning = WarningAlert.alert("The newly activated config does not exist", takeaway: "check config id or run clippr token add")
+
+                noora.warning(warning)
+                return
+            } 
+            noora.success("Changed active config. Using server \"\(config.server)\".")
         }
         else
         {
