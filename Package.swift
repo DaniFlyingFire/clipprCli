@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "clippr",
+    platforms: [
+        .macOS(.v12)
+    ],
     dependencies: [
         // other dependencies
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
