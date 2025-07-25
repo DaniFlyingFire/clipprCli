@@ -11,16 +11,11 @@ struct ClipprTokenUpdate: ParsableCommand {
     @Argument
     var token: String?
 
-    mutating func run() {
+    mutating func run() throws {
 
         let noora = Noora()
 
-        let data = TokenManager.read()
-
-        guard var data else {
-            noora.error("Could not read data")
-            return
-        }
+        var data = try CommandHelper.getSettings(noora)
 
         if id == nil {
             id = noora.singleChoicePrompt(
@@ -43,27 +38,20 @@ struct ClipprTokenUpdate: ParsableCommand {
         guard let id, let token else {
             
             noora.error("Something went wrong :/")
-            return
+            throw ExitCode.failure
         }
 
         guard var config = data.tokens[id] else {
             noora.error("The passed id does not exist")
-            return
+            throw ExitCode.failure
         }
 
         config.token = token
 
         data.tokens[id] = config
 
-        let success = TokenManager.write(data)
+        try CommandHelper.setSettings(noora, data)
 
-        if success 
-        {
-            noora.success("Updated token")
-        }
-        else
-        {
-            noora.error("Save failed :/")
-        } 
+        noora.success("Updated token")
     }
 }

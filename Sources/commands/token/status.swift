@@ -5,16 +5,11 @@ struct ClipprTokenStatus: ParsableCommand {
 
     static let configuration = CommandConfiguration(commandName: "status")
 
-    mutating func run() {
+    mutating func run() throws {
         let noora = Noora()
 
 
-        let data = TokenManager.read()
-
-        guard let data else {
-            noora.error("Could not read data")
-            return
-        }
+        let data = try CommandHelper.getSettings(noora)
 
         guard let active = data.active else {
 

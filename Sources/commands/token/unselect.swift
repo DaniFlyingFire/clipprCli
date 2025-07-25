@@ -5,29 +5,18 @@ struct ClipprTokenUnselect: ParsableCommand {
 
     static let configuration = CommandConfiguration(commandName: "unselect")
 
-    mutating func run() {
+    mutating func run() throws{
         let noora = Noora()
 
 
-        let data = TokenManager.read()
-
-        guard var data else {
-            noora.error("Could not read data")
-            return
-        }
+        var data = try CommandHelper.getSettings(noora)
 
         data.active = nil
 
-        let success = TokenManager.write(data)
+        try CommandHelper.setSettings(noora, data)
 
-        if success 
-        {
-            noora.success("Unselected active config")
-        }
-        else
-        {
-            noora.error("Save failed :/")
-        } 
+        noora.success("Unselected active config")
+        
     }
 
 }

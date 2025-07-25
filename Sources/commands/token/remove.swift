@@ -8,15 +8,10 @@ struct ClipprTokenRemove : ParsableCommand {
     @Argument
     var ids: [String]
 
-    mutating func run() {
+    mutating func run() throws {
         let noora = Noora()
 
-        let data = TokenManager.read()
-
-        guard var data else {
-            noora.error("Could not read data")
-            return
-        }
+        var data = try CommandHelper.getSettings(noora)
 
         var warnings: [String] = []
 
@@ -27,21 +22,16 @@ struct ClipprTokenRemove : ParsableCommand {
             }
         }
         
-        let success = TokenManager.write(data)
+        try CommandHelper.setSettings(noora, data)
 
-        if success 
-        {
-            if warnings.isEmpty {
-                noora.success("Removed configs")
-            } else {
-                noora.warning(warnings.map { s in
-                    WarningAlert(stringLiteral: s)
-                })
-            }
+
+        if warnings.isEmpty {
+            noora.success("Removed configs")
+        } else {
+            noora.warning(warnings.map { s in
+                WarningAlert(stringLiteral: s)
+            })
         }
-        else
-        {
-            noora.error("Save failed :/")
-        } 
+        
     }
 }

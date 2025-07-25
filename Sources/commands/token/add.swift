@@ -14,9 +14,11 @@ struct ClipprTokenAdd: ParsableCommand {
     @Option
     var token: String?
 
-    mutating func run() {
+    mutating func run() throws {
 
         let noora = Noora()
+
+        var data = try CommandHelper.getSettings(noora)
 
         if domain == nil 
         {
@@ -59,27 +61,13 @@ struct ClipprTokenAdd: ParsableCommand {
 
         guard let id, let domain, let token else {
             noora.error("Something went wrong :/")
-            return
-        }
-
-        let data = TokenManager.read()
-
-        guard var data else {
-            noora.error("Could not read data")
-            return
+            throw ExitCode.failure
         }
 
         data.tokens[id] = Config(server: domain, token: token)
 
-        let success = TokenManager.write(data)
+        try CommandHelper.setSettings(noora, data)
 
-        if success 
-        {
-            noora.success("Added new server")
-        }
-        else
-        {
-            noora.error("Save failed :/")
-        }
+        noora.success("Added new server")
     }
 }

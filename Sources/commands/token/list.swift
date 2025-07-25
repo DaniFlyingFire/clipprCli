@@ -8,17 +8,12 @@ struct ClipprTokenList: ParsableCommand {
     @Flag(name: [.long, .short], help: "include token in table")
     var all = false
 
-    mutating func run() {
+    mutating func run() throws {
 
         let noora = Noora()
 
 
-        let data = TokenManager.read()
-
-        guard let data else {
-            noora.error("Could not read data")
-            return
-        }
+        let data = try CommandHelper.getSettings(noora)
 
         if all {
 
